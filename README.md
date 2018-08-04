@@ -58,7 +58,7 @@ function getactivity() {
  // 电脑顶不住 那个压力 一次 只需要搞定一页就行
  // https://try.jd.com/activity/getActivityList?page=11&activityType=1
  // 首先要测试一下 整个 arr 是否能获取的到
- // var j = 15 
+ // var j = 15
  // 终于找到你了 查询是否选中 接口 提交所有要查询的 activityIds 返回的 就是都已经申请过的 商品
  // https://try.jd.com/user/getApplyStateByActivityIds?activityIds=356214,364095,360123,356245,361018,360096,357457,362323,354447,354537,358363,361124,354569,357194,356233,355601,354494,359717,360991,359698
  var urlList = "https://try.jd.com/activity/getActivityList";
@@ -305,6 +305,7 @@ function SQgoods(activity_id) {
  if (d.message == "申请成功！") {
  successIndex++;
             }
+            console.log("易水出品,大牛勿扰")
  getAllpageNum()
         },
  fail: function (d) {
