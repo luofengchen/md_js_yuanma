@@ -294,10 +294,8 @@ function getverden_Id(activity_id) {
                         // 获取到了 商铺的ID 先关注 然后在申请
                         // 因为有的商品的这个参数就是找不到所有就获取整个页面来提取整个参数 明天改
                         GZgoods(shopInfo_Id);
-                        SQgoods(activity_id);
                     } else {
                         GZgoods(activity_id);
-                        SQgoods(activity_id);
                     }
                 }else{
                     skipe()
@@ -336,7 +334,8 @@ function GZgoods(venderId) {
         callbackNum += randNum[Math.floor(Math.random() * 9)];
     }
     console.log('callbackNum:', callbackNum);
-    var url = "https://follow-soa.jd.com/rpc/shardVender/follow"
+            //    https://follow-soa.jd.com/rpc/vender/follow
+    var url = "https://follow-soa.jd.com/rpc/vender/follow"
     var data2 = "sysName=try.jd.com&venderId=" + venderId + "&_=" + timechuo
     $.ajax({
         type: "GET",
@@ -346,16 +345,17 @@ function GZgoods(venderId) {
         success: function (d) {
             // 关注成功然后在进行 试用申请
             console.log('关注接口成功:', d);
+            SQgoods(activity_id);
         },
         fail: function (d) {
             console.log('关注接口失败:', d);
             // 数据出错 直接跳出下一个商品
-            skipe()
+            SQgoods(activity_id);
         },
         error: function (a, d) {
             console.log('关注接口出错:', d);
             // 数据出错 直接跳出下一个商品
-            skipe()
+            SQgoods(activity_id);
         }
     })
 }
