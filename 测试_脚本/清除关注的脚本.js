@@ -1,4 +1,6 @@
+// setInterval(() => {
 getverderIds()
+// }, 5000)
 
 function getverderIds() {
     // https://t.jd.com/follow/vender/list.do?index=2
@@ -17,33 +19,49 @@ function getverderIds() {
     request(query).then(d => {
         // console.log('输出我要的信息',d);
     }).catch(d => {
-        // console.log('输出错误的信息', d.responseText);
+        // // console.log('输出错误的信息', d.responseText);
         if (d.responseText != "") {
             let str = d.responseText;
             let regexp = /id=.vender_\d+./g;
-            // str.match(regexp)
-            let vender_id = [];
-            for (let i = 0; i < 50; i++) {
-                // vender_id.push(regexp.exec(str));
-                console.log('输出匹配的信息:',regexp.exec(str),i);
+            let venders_list = [];
+            venders_list.push(...str.match(regexp))
+            if (venders_list.length > 0) {
+                console.log(str.match(regexp));
+                let vender_id = [];
+                for (let i = 0; i < venders_list.length; i++) {
+                    let val = venders_list[i];
+                    let reg = /\d+/g;
+                    vender_id.push(reg.exec(val)[0]);
+                }
+                console.log('输出匹配的信息:', venders_list, vender_id);
+                let venderIds = ""
+                for (let i = 0; i < vender_id.length; i++) {
+                    venderIds += "," + vender_id[i];
+                }
+                venderIds = venderIds.slice(1);
+                console.log('输出封装的vender', venderIds);
+                unshiftGZ(venderIds)
+            }else{
+                return
             }
         }
     })
-
 }
 // unshiftGZ()
 // https://t.jd.com/follow/vender/batchUnfollow.do
-function unshiftGZ() {
+function unshiftGZ(venderIds) {
     let query = {};
     query.url = "https://t.jd.com/follow/vender/batchUnfollow.do";
-    query.data = "venderIds=633365";
+    query.data = "venderIds=" + venderIds;
     query.resoletype = "success";
     query.rejecttype = "error";
     query.method = "POST";
     request(query).then(d => {
         console.log('输出我要的信息,成功的 信息:', d);
+        getverderIds()
     }).catch(d => {
-        console.log('失败的信息:',d);
+        console.log('失败的信息:', d);
+        getverderIds()
     })
 }
 function request(query) {
