@@ -1,17 +1,17 @@
 // 整合后的接口
 // var listArr = $("#goods-list .items .con .clearfix li");
-var unableArr = [];//存储所有 活动商品 活动ID的数组
+var unableArr = []; //存储所有 活动商品 活动ID的数组
 var resertflag = false //是否重跑 控制器 true 为开启 false 为关闭 
-var idx0 = 1;//页面的值
-var idx1 = 0;//当前商品是第几个
+var idx0 = 1; //页面的值
+var idx1 = 0; //当前商品是第几个
 var activity_id = "";
 var callbackNum = "1"
 var unablegoodsNum = 0;
 var ablegoodsNum = 0;
 var AllpageNum = 0;
-var successNums = 0;//成功调用的次数
-var successIndex = 0;//申请成功的次数
-var consoleClear = 0;//因为控制台显示的信息比较冗余所以通过计时的 手段40次 清除一次
+var successNums = 0; //成功调用的次数
+var successIndex = 0; //申请成功的次数
+var consoleClear = 0; //因为控制台显示的信息比较冗余所以通过计时的 手段40次 清除一次
 // 可以把函数分开来执行
 // var qj_flag = true;
 // console.log('输出获取的li的值:', listArr);
@@ -49,6 +49,7 @@ $.ajax({
         }
     }
 })
+
 function getactivity() {
     consoleClear++;
     console.log('进入获取函数里面？？？', idx0, idx1, AllpageNum);
@@ -161,15 +162,15 @@ function getactivity() {
         // 是否无限重跑？
         if (resertflag) {
             // 所有参数重置一下
-            idx0 = 1;//页面的值
-            idx1 = 0;//当前商品是第几个
+            idx0 = 1; //页面的值
+            idx1 = 0; //当前商品是第几个
             activity_id = "";
             callbackNum = "1"
             unablegoodsNum = 0;
             ablegoodsNum = 0;
             AllpageNum = 0;
-            successNums = 0;//成功调用的次数
-            successIndex = 0;//申请成功的次数
+            successNums = 0; //成功调用的次数
+            successIndex = 0; //申请成功的次数
             // getAllpageNum()
             getactivity()
         }
@@ -200,6 +201,7 @@ function postToJd() {
     startPOST();
     console.log('unableArr的内容:', unableArr);
 }
+
 function startPOST() {
     console.log('当前的idx1的值:', idx1);
     if (unableArr.length > 0) {
@@ -241,6 +243,7 @@ function startPOST() {
         // 本页面 没有了 可以申请的商品 跳转到下一页
     }
 }
+
 function login(activity_id) {
     var num = [4, 5, 6, 7, 8, 9]
     var index = num[Math.floor(Math.random() * 6)];
@@ -272,6 +275,7 @@ function login(activity_id) {
         }
     })
 }
+
 function getverden_Id(activity_id) {
     // var activity_id = 365899;
     var data_shopInfo_Url = "https://try.jd.com/" + activity_id + ".html";
@@ -283,28 +287,46 @@ function getverden_Id(activity_id) {
             // console.log('获取商品信息接口成功::', d.responseText);
             if (d != null) {
                 var cont = d.responseText;
-                var shopInfo_Id = ""
-                var regexp = /vender_id ="(\d*)"/g
-                var vender_ids = regexp.exec(cont);
+                console.log('输出信息的详情情况:', d);
+                var verder_Id = "";
+                var shopInfo_Id = "";
+                var verder_regexp = /vender_id ="(\d*)"/g;
+                var shop_regexp = /shop_id="(\d*)"/g;
+                var vender_ids = verder_regexp.exec(cont);
+                var shopInfo_Ids = shop_regexp.exec(cont);
+                console.log('正则的结果是???:', vender_ids, shopInfo_Ids);
                 if (vender_ids != null) {
-                    shopInfo_Id = vender_ids[1];
-                    console.log('输出verder_id:', vender_ids);
-                    if (shopInfo_Id != "") {
+                    verder_Id = vender_ids[1];
+                    console.log('输出verder_id:', vender_ids[1]);
+                    if (verder_Id != "") {
                         // venderId = d.data.shopInfo.venderId;
                         // 获取到了 商铺的ID 先关注 然后在申请
                         // 因为有的商品的这个参数就是找不到所有就获取整个页面来提取整个参数 明天改
-                        GZgoods(shopInfo_Id);
+                        GZgoods(verder_Id, shopInfo_Id);
+                        // SQgoods(activity_id);
                     } else {
-                        GZgoods(activity_id);
+                        skipe()
                     }
-                }else{
+                }
+                if (shopInfo_Ids != null) {
+                    shopInfo_Id = shopInfo_Ids[1];
+                    if (shopInfo_Id != "") {
+                        GZgoods(shopInfo_Id);
+                        // if (verder_Id == "") {
+                        //     SQgoods(activity_id);
+                        // }
+                    } else {
+                        skipe()
+                    }
+                }
+                if (vender_ids == null || shopInfo_Ids == null) {
                     skipe()
                 }
             } else {
                 // 数据出错 直接跳出下一个商品
                 getverden_Id()
             }
-        },
+        }
     });
 }
 // function getShopInfo(activity_id) {
@@ -324,41 +346,50 @@ function getverden_Id(activity_id) {
 //         }
 //     })
 // }
-function GZgoods(venderId) {
+function GZgoods(verder_Id) {
     var num = [4, 5, 6, 7, 8, 9]
     var index = num[Math.floor(Math.random() * 6)] * 1000;
     var timechuo = new Number(new Date().getTime()) + index;
-    callbackNum = "";
-    var randNum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    for (var j = 0; j < 7; j++) {
-        callbackNum += randNum[Math.floor(Math.random() * 9)];
-    }
-    console.log('callbackNum:', callbackNum);
-            //    https://follow-soa.jd.com/rpc/vender/follow
-    var url = "https://follow-soa.jd.com/rpc/vender/follow"
-    var data2 = "sysName=try.jd.com&venderId=" + venderId + "&_=" + timechuo
+    // https: //follow-soa.jd.com/rpc/vender/follow?sysName=try.jd.com&venderId=739893&callback=jQuery953900&_=1535507529724
+    let query = {};
+    query.url = "https://follow-soa.jd.com/rpc/vender/follow";
+    query.data2 = "sysName=try.jd.com&venderId=" + verder_Id + "&_=" + timechuo;
+    // https://follow-soa.jd.com/rpc/vender/follow?sysName=try.jd.com&venderId=612327&callback=jQuery2906362&_=1535510691873
+    getreporst(query)
+    // num = [4, 5, 6, 7, 8, 9]
+    // index = num[Math.floor(Math.random() * 6)] * 1000;
+    // timechuo = new Number(new Date().getTime()) + index;
+    // query.url = "https://follow-soa.jd.com/rpc/shardVender/follow";
+    // query.data2 = "sysName=try.jd.com&venderId=" + shopInfo_Id + "&_=" + timechuo;
+    // getreporst(query)
+}
+
+
+
+function getreporst(query) {
     $.ajax({
         type: "GET",
-        url: url,
-        data: data2,
+        url: query.url,
+        data: query.data2,
         dataType: "jsonp",
         success: function (d) {
             // 关注成功然后在进行 试用申请
             console.log('关注接口成功:', d);
-            SQgoods(activity_id);
+            SQgoods(activity_id)
         },
         fail: function (d) {
             console.log('关注接口失败:', d);
             // 数据出错 直接跳出下一个商品
-            SQgoods(activity_id);
+            skipe()
         },
         error: function (a, d) {
             console.log('关注接口出错:', d);
             // 数据出错 直接跳出下一个商品
-            SQgoods(activity_id);
+            skipe()
         }
     })
 }
+
 function SQgoods(activity_id) {
     var data3 = "activityId=" + activity_id + "&source=0"
     $.ajax({
@@ -373,8 +404,14 @@ function SQgoods(activity_id) {
             console.log('让我看看这里怎么回事？？？', idx1);
             // d.message
             successIndex++;
+            // 您您的申请次数已超过上限，请明天申请!
+            if (d.message == "您的申请次数已超过上限，请明天申请!") {
+                console.log('%c所有申请已经申请完毕,===>总共申请' + successIndex + '次' + "申请成功" + successNums + "次", 'color: blue; font-style: italic;font-size:40px;');
+                console.log('%c可申请的已申请完毕剩下的只能等明天了', 'color: blue; font-style: italic;font-size:40px;');
+                return
+            }
             if (d.message == "申请成功！") {
-                successNums++;//成功记录一次
+                successNums++; //成功记录一次
                 idx1++;
                 postToJd()
             } else if (d.message == "操作不要太快哦！") {
@@ -398,6 +435,7 @@ function SQgoods(activity_id) {
     })
 
 }
+
 function skipe() {
     // 数据出错 直接跳出下一个商品 的函数
     idx1++;
