@@ -12,6 +12,7 @@ var AllpageNum = 0;
 var successNums = 0; //成功调用的次数
 var successIndex = 0; //申请成功的次数
 var consoleClear = 0; //因为控制台显示的信息比较冗余所以通过计时的 手段40次 清除一次
+var timeindex = 6000
 // 可以把函数分开来执行
 // var qj_flag = true;
 // console.log('输出获取的li的值:', listArr);
@@ -213,7 +214,7 @@ function startPOST() {
             //  现在是有可申请的商品 所以获取 activityid获取 店铺ID
             setTimeout(function () {
                 login(activity_id)
-            }, 5000);
+            }, timeindex);
             // 一秒明显不够2秒 试试 3秒应该 够了 最短限制在 4500ms
         } else {
             console.log('不可能啊最少一次的？？？', idx1);
@@ -302,7 +303,7 @@ function getverden_Id(activity_id) {
                         // venderId = d.data.shopInfo.venderId;
                         // 获取到了 商铺的ID 先关注 然后在申请
                         // 因为有的商品的这个参数就是找不到所有就获取整个页面来提取整个参数 明天改
-                        GZgoods(verder_Id, shopInfo_Id);
+                        GZgoods(verder_Id);
                         // SQgoods(activity_id);
                     } else {
                         skipe()
@@ -319,6 +320,7 @@ function getverden_Id(activity_id) {
                         skipe()
                     }
                 }
+                SQgoods(activity_id)
                 if (vender_ids == null || shopInfo_Ids == null) {
                     skipe()
                 }
@@ -375,7 +377,6 @@ function getreporst(query) {
         success: function (d) {
             // 关注成功然后在进行 试用申请
             console.log('关注接口成功:', d);
-            SQgoods(activity_id)
         },
         fail: function (d) {
             console.log('关注接口失败:', d);
@@ -415,6 +416,7 @@ function SQgoods(activity_id) {
                 idx1++;
                 postToJd()
             } else if (d.message == "操作不要太快哦！") {
+                timeindex = timeindex + 1000;
                 postToJd()
             } else {
                 idx1++;
