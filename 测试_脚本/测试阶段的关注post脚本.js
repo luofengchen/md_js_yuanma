@@ -410,13 +410,11 @@ function SQgoods(activity_id) {
                 console.log('%c所有申请已经申请完毕,===>总共申请' + successIndex + '次' + "申请成功" + successNums + "次", 'color: blue; font-style: italic;font-size:40px;');
                 console.log('%c可申请的已申请完毕剩下的只能等明天了', 'color: blue; font-style: italic;font-size:40px;');
                 return
-            }
-            if (d.message == "申请成功！") {
+            } else if (d.message == "申请成功！") {
                 successNums++; //成功记录一次
                 idx1++;
                 postToJd()
             } else if (d.message == "操作不要太快哦！") {
-                timeindex = timeindex + 1000;
                 postToJd()
             } else {
                 idx1++;
