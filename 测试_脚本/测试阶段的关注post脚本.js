@@ -13,7 +13,7 @@ var successNums = 0; //成功调用的次数
 var successIndex = 0; //申请成功的次数
 var consoleClear = 0; //因为控制台显示的信息比较冗余所以通过计时的 手段40次 清除一次
 var maxindex = 0; //京东添加了 每日申请的顶值 我输出一下还有多少没有申请
-var timeindex = 6000
+var timeindex = 6000;
 // 可以把函数分开来执行
 // var qj_flag = true;
 // console.log('输出获取的li的值:', listArr);
@@ -210,7 +210,7 @@ function startPOST() {
     console.log('当前的idx1的值:', idx1);
     if (unableArr.length > 0) {
         if (idx1 < unableArr.length) {
-            console.log('这里应该是正常的::', idx1);
+            console.log('这他妹的就科学了,参数不对啊', idx0, idx1);
             var ele = unableArr[idx1];
             activity_id = ele;
             console.log("活动ID怎么丢了::::", activity_id, unableArr, idx1);
@@ -298,6 +298,8 @@ function getverden_Id(activity_id) {
                 var shop_regexp = /shop_id="(\d*)"/g;
                 var vender_ids = verder_regexp.exec(cont);
                 var shopInfo_Ids = shop_regexp.exec(cont);
+                var p1 = "";
+                var p2 = "";
                 console.log('正则的结果是???:', vender_ids, shopInfo_Ids);
                 if (vender_ids != null) {
                     verder_Id = vender_ids[1];
@@ -306,7 +308,7 @@ function getverden_Id(activity_id) {
                         // venderId = d.data.shopInfo.venderId;
                         // 获取到了 商铺的ID 先关注 然后在申请
                         // 因为有的商品的这个参数就是找不到所有就获取整个页面来提取整个参数 明天改
-                        GZgoods(verder_Id);
+                        p1 = GZgoods(verder_Id);
                         // SQgoods(activity_id);
                     } else {
                         skipe()
@@ -315,7 +317,7 @@ function getverden_Id(activity_id) {
                 if (shopInfo_Ids != null) {
                     shopInfo_Id = shopInfo_Ids[1];
                     if (shopInfo_Id != "") {
-                        GZgoods(shopInfo_Id);
+                        p2 = GZgoods(shopInfo_Id);
                         // if (verder_Id == "") {
                         //     SQgoods(activity_id);
                         // }
@@ -323,7 +325,10 @@ function getverden_Id(activity_id) {
                         skipe()
                     }
                 }
-                SQgoods(activity_id)
+                Promise.all([p1, p2]).then((d) => {
+                    console.log('让我用一下all的方法看看:', d);
+                    SQgoods(activity_id)
+                })
                 if (vender_ids == null || shopInfo_Ids == null) {
                     skipe()
                 }
@@ -360,7 +365,29 @@ function GZgoods(verder_Id) {
     query.url = "https://follow-soa.jd.com/rpc/vender/follow";
     query.data2 = "sysName=try.jd.com&venderId=" + verder_Id + "&_=" + timechuo;
     // https://follow-soa.jd.com/rpc/vender/follow?sysName=try.jd.com&venderId=612327&callback=jQuery2906362&_=1535510691873
-    getreporst(query)
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: query.url,
+            data: query.data2,
+            dataType: "jsonp",
+            success: function (d) {
+                // 关注成功然后在进行 试用申请
+                console.log('关注接口成功:', d);
+                resolve(d)
+            },
+            fail: function (d) {
+                console.log('关注接口失败:', d);
+                // 数据出错 直接跳出下一个商品
+                resolve(d)
+            },
+            error: function (a, d) {
+                console.log('关注接口出错:', d);
+                // 数据出错 直接跳出下一个商品
+                resolve(d)
+            }
+        })
+    })
     // num = [4, 5, 6, 7, 8, 9]
     // index = num[Math.floor(Math.random() * 6)] * 1000;
     // timechuo = new Number(new Date().getTime()) + index;
@@ -369,30 +396,6 @@ function GZgoods(verder_Id) {
     // getreporst(query)
 }
 
-
-
-function getreporst(query) {
-    $.ajax({
-        type: "GET",
-        url: query.url,
-        data: query.data2,
-        dataType: "jsonp",
-        success: function (d) {
-            // 关注成功然后在进行 试用申请
-            console.log('关注接口成功:', d);
-        },
-        fail: function (d) {
-            console.log('关注接口失败:', d);
-            // 数据出错 直接跳出下一个商品
-            skipe()
-        },
-        error: function (a, d) {
-            console.log('关注接口出错:', d);
-            // 数据出错 直接跳出下一个商品
-            skipe()
-        }
-    })
-}
 
 function SQgoods(activity_id) {
     var num = [4, 5, 6, 7, 8, 9]
