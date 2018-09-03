@@ -12,6 +12,7 @@ var AllpageNum = 0;
 var successNums = 0; //成功调用的次数
 var successIndex = 0; //申请成功的次数
 var consoleClear = 0; //因为控制台显示的信息比较冗余所以通过计时的 手段40次 清除一次
+var maxindex = 0; //京东添加了 每日申请的顶值 我输出一下还有多少没有申请
 var timeindex = 6000
 // 可以把函数分开来执行
 // var qj_flag = true;
@@ -160,6 +161,8 @@ function getactivity() {
         // console.log("%caaaaa","color: red; font-style: italic;font-size:20px")
         // 自定义当前样式 输出到控制台的
         console.log('%c所有申请已经申请完毕,===>总共申请' + successIndex + '次' + "申请成功" + successNums + "次", 'color: blue; font-style: italic;font-size:40px;');
+        // console.log('%c所有申请已经申请完毕,===>总共申请' + successIndex + '次' + "申请成功" + successNums + "次", 'color: blue; font-style: italic;font-size:40px;');
+        console.log(`%c可申请的已申请完毕剩下的只能等明天了${maxindex}`, 'color: blue; font-style: italic;font-size:40px;');
         // 是否无限重跑？
         if (resertflag) {
             // 所有参数重置一下
@@ -392,7 +395,10 @@ function getreporst(query) {
 }
 
 function SQgoods(activity_id) {
-    var data3 = "activityId=" + activity_id + "&source=0"
+    var num = [4, 5, 6, 7, 8, 9]
+    var index = num[Math.floor(Math.random() * 6)] * 1000;
+    var timechuo = new Number(new Date().getTime()) + index;
+    var data3 = "activityId=" + activity_id + "&source=0" + "&_=" + timechuo;
     $.ajax({
         type: "GET",
         url: "https://try.jd.com/migrate/apply",
@@ -407,9 +413,10 @@ function SQgoods(activity_id) {
             successIndex++;
             // 您您的申请次数已超过上限，请明天申请!
             if (d.message == "您的申请次数已超过上限，请明天申请!") {
-                console.log('%c所有申请已经申请完毕,===>总共申请' + successIndex + '次' + "申请成功" + successNums + "次", 'color: blue; font-style: italic;font-size:40px;');
-                console.log('%c可申请的已申请完毕剩下的只能等明天了', 'color: blue; font-style: italic;font-size:40px;');
-                return
+                maxindex++;
+                idx1++;
+                postToJd()
+                // return
             } else if (d.message == "申请成功！") {
                 successNums++; //成功记录一次
                 idx1++;
