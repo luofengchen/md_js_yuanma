@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/jquery/1.12.1/jquery.js"></script>
+</head>
+
+<body>
+    <script>
+        var ls_num = "801381567299448181";
+        var query = {
+            url: "http://www.kuaidi100.com/autonumber/autoComNum",
+            data: "resultv2=1&text=" + ls_num
+        }
+
+        function getinfo(query) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: query.url,
+                    method: "POST",
+                    data: query.data,
+                    dataType: "jsonp",
+                    success: function (data) {
+                        console.log('data的值:', data);
+                        // data.num
+                        if (data.auto["0"].comCode) {
+                            // var commeny = data.auto["0"].comCode || "";
+                            // var kdcode = data.num || "";
+                            resolve(data)
+                        }
+                    },
+                    complete: function () {
+                        resolve({})
+                    }
+                })
+            })
+        }
+        var p1 = getinfo(query)
+        Promise.all([p1]).then(data => {
+            console.log(data);
+            // ["0"].num
+            var commeny = data["0"].auto["0"].comCode || "";
+            var kdcode = data["0"].num || "";
+            var query = {
+                url: "http://www.kuaidi100.com/query",
+                data: "type=" + commeny + "&postid=" + kdcode + "&temp=" + Math.random()
+            }
+            sendinfo(query)
+        })
+        // “http://www.kuaidi100.com/query?type=” ＋ comCode1 ＋ “&postid=” ＋ num1 ＋ “&temp=0.” ＋ 文本_取随机数字 (16)
+        function sendinfo(query) {
+            // return new Promise((resolve, reject) => {
+            $.ajax({
+                url: query.url,
+                method: "GET",
+                data: query.data,
+                dataType: "jsonp",
+                jsonpCallback:"success_jsonpCallback",
+                success: function (data) {
+                    console.log('data的值1111:', data);
+                    // data.num
+                    // resolve(JSON.stringify(data))
+                },
+                complete: function () {
+                    // resolve({})
+                }
+            })
+            // })
+        }
+    </script>
+</body>
+
+</html>

@@ -144,7 +144,12 @@ function getactivity() {
                                 getactivity()
                             } else {
                                 console.log('进入这里？？？3');
-                                postToJd()
+                                // 
+                                login(activity_id).then(data => {
+                                    postToJd()
+                                }).catch(res => {
+                                    postToJd()
+                                })
                                 // console.log('');
                             }
                         },
@@ -180,6 +185,7 @@ function getactivity() {
         }
     }
 }
+
 // postToJd()
 function postToJd() {
     console.log('%c当前第' + idx0 + '页,第' + idx1 + "个商品", 'color: blue; font-style: italic;font-size:40px');
@@ -203,6 +209,7 @@ function postToJd() {
     //     }
     // }, 15000);
     startPOST();
+
     console.log('unableArr的内容:', unableArr);
 }
 
@@ -216,7 +223,7 @@ function startPOST() {
             console.log("活动ID怎么丢了::::", activity_id, unableArr, idx1);
             //  现在是有可申请的商品 所以获取 activityid获取 店铺ID
             setTimeout(function () {
-                login(activity_id)
+                getverden_Id(activity_id)
             }, timeindex);
             // 一秒明显不够2秒 试试 3秒应该 够了 最短限制在 4500ms
         } else {
@@ -248,7 +255,7 @@ function startPOST() {
     }
 }
 
-function login(activity_id) {
+function login() {
     var num = [4, 5, 6, 7, 8, 9]
     var index = num[Math.floor(Math.random() * 6)];
     var timeout = new Number(new Date().getTime()) + index * 1000;
@@ -259,24 +266,28 @@ function login(activity_id) {
     }
     // https://passport.jd.com/loginservice.aspx?callback=jQuery5690236&method=Login&_=1532855709437
     var url0 = "https://passport.jd.com/loginservice.aspx";
-    var data0 = "&method=Login&_=" + timeout
-    console.log('login接口怎么回事？？？', url0, data0);
-    $.ajax({
-        type: "GET",
-        url: url0,
-        data: data0,
-        dataType: "jsonp",
-        success: function (d) {
-            console.log('登录接口成功::', d);
-            // 最后一次停在这里了
-            console.log('登录成功了获取活动的iD:', activity_id);
-            // getone();
-            getverden_Id(activity_id)
-        },
-        fail: function (d) {
-            skipe()
-            console.log('登录失败的数据？？？', d);
-        }
+    var data0 = "&method=Login&_=" + timeout;
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "GET",
+            url: url0,
+            data: data0,
+            dataType: "jsonp",
+            success: function (d) {
+                console.log('登录接口成功::', d);
+                // 最后一次停在这里了
+                console.log('登录成功了获取活动的iD:', activity_id);
+                // getone();
+                resolve()
+            },
+            fail: function (d) {
+                console.log('登录失败的数据？？？', d);
+                resolve()
+            },
+            error: function (params) {
+                reject()
+            }
+        })
     })
 }
 
