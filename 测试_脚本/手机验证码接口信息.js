@@ -1,5 +1,5 @@
 // 登录接口 
-http://kapi.yika66.com:20153/User/login?uName=cuixu827981516&pWord=cuixu0123&VER=44
+http://kapi.yika66.com:20153/User/login?uName=&pWord=&VER=44
 // 本次获取的信息 A6AFB7A3906AFC6D082910CEF9625207&0.79&10&30&10&1&0&100693381&��ͨ�û�&3.09
 // token A6AFB7A3906AFC6D082910CEF9625207
 // 获取手机号
